@@ -1,9 +1,9 @@
 #include "server.hpp"
+#include <iostream>
 
 //TODO:
-//be able to choose any port you want when itiating
-    // loop until a port can be opened
-//fix: sending list of users that are already in the chat to a new user
+//password hashing
+
 Server::Server(QObject *parent) :
     QTcpServer(parent)
     {
@@ -11,13 +11,20 @@ Server::Server(QObject *parent) :
 
 
 /*
- * Start the server, verify that the given port can be listened on.
- * Check the if the database exists.
+ * Start the server, and get prompted to input a port to listen on.
+ * Check if the database exists and if not, create it along with the table `users`.
  */
 void Server::startServer()
 {
-    if(!this->listen(QHostAddress::Any,11000)) qDebug() << "Could not start server" << this->serverError();
-    else qDebug() << "Listening...";
+    int port = -1;
+    char buffer[100];
+
+    do {
+        std::cout << "Enter a port to start the server on: ";
+        if(!fgets(buffer, sizeof(buffer), stdin)) continue;
+        port = atoi(buffer);
+    } while(port <= 0 || !this->listen(QHostAddress::Any,port));
+    qDebug() << "Listening on port" << port;
 
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("chatClient.db");
@@ -92,7 +99,6 @@ void Server::onNewData() {
                         socket->write(createPacket("user", map));
                     }
             }
-
         } else if(packetMap.value("header") == "message") {
                 QList<Client*>::iterator i;
                 for (i = clientConnections.begin(); i != clientConnections.end(); ++i)
@@ -147,8 +153,12 @@ void Server::sendUserJoined(QTcpSocket *socket, QString username) {
 
     QByteArray sendData = createPacket("user", map);
     QList<Client*>::iterator i;
+    qDebug() << "Attempting to send out: " << sendData;
     for (i = clientConnections.begin(); i != clientConnections.end(); ++i)
-        if((*i)->m_socket != socket) (qobject_cast<Client*>(*i))->m_socket->write(sendData);
+        if((*i)->m_socket != socket) {
+            qDebug() << "Sending to: ";
+            (qobject_cast<Client*>(*i))->m_socket->write(sendData);
+        }
 }
 
 /*
@@ -174,7 +184,6 @@ QMap<QString, QString> Server::userExists(QString username, QString password) {
     QMap<QString, QString> map;
     QSqlQuery query(db);
 
-    qDebug() << "Checking: " << username << password;
     query.prepare("SELECT username FROM users WHERE username=(:username) COLLATE NOCASE AND password=(:password)");
     query.bindValue(":username", username);
     query.bindValue(":password", password);

@@ -119,6 +119,7 @@ void MainWindow::serverDisconnected() {
 void MainWindow::readyRead()
 {
     QList<QByteArray> readData = socket->readAll().split('\n');
+    qDebug() << "Read: " << readData;
 
     QList<QByteArray>::iterator iterator;
     for (iterator = readData.begin(); iterator != readData.end(); ++iterator) {
@@ -150,10 +151,9 @@ void MainWindow::readyRead()
                         break;
                     } else i++;
                 }
-                if(!userFound) ui->userList->append(packetMap.value("user"));
+                if(!userFound) ui->userList->append(packetMap.value("username"));
             } else if(packetMap.value("type") == "left") {
                 QStringList lines = ui->userList->toPlainText().split("\n");
-                qDebug() << packetMap.value("username") << "has left!";
                 int i = 0;
                 while(i < lines.size()) {
                     QString line = lines.at(i);
