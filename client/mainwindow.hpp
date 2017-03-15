@@ -25,6 +25,7 @@ private:
     QTcpSocket *socket;
     Ui::MainWindow *ui;
     QString username;
+    QMap<QString, QString> readPacket(QByteArray);
     QByteArray createPacket(QString, QMap<QString, QString>);
 
 private slots:
@@ -34,6 +35,7 @@ private slots:
     void on_loginButton_clicked();
     void on_logoutButton_clicked();
     void readyRead();
+    void on_registerButton_clicked();
 };
 
 #endif // MAINWINDOW_HPP

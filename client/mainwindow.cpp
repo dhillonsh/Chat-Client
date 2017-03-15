@@ -3,6 +3,15 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
         ui->setupUi(this);
+
+        ui->ipInput->setValidator(new QRegExpValidator( QRegExp("[A-Za-z0-9.]*"), this ));
+        ui->portInput->setValidator(new QRegExpValidator( QRegExp("[0-9.]*"), this ));
+
+        ui->usernameLoginField->setValidator(new QRegExpValidator( QRegExp("[A-Za-z0-9_]*"), this ));
+        ui->passwordLoginField->setValidator(new QRegExpValidator( QRegExp("[A-Za-z0-9]*"), this ));
+
+        ui->usernameRegisterField->setValidator(new QRegExpValidator( QRegExp("[A-Za-z0-9_]*"), this ));
+        ui->passwordRegisterField->setValidator(new QRegExpValidator( QRegExp("[A-Za-z0-9]*"), this ));
 }
 
 MainWindow::~MainWindow()
@@ -20,8 +29,8 @@ void MainWindow::addText(QString str) {
  */
 void MainWindow::on_connectButton_clicked()
 {
-    QString ip = ui->ipInput->toPlainText();
-    QString port = ui->portInput->toPlainText();
+    QString ip = ui->ipInput->text();
+    QString port = ui->portInput->text();
 
     socket = new QTcpSocket(this);
     socket->connectToHost(ip, quint16(port.toInt()));
@@ -42,8 +51,18 @@ void MainWindow::on_connectButton_clicked()
  */
 void MainWindow::on_loginButton_clicked()
 {
-    QMap<QString, QString> map = {{"username", ui->usernameLoginField->toPlainText()}, {"password", ui->passwordLoginField->toPlainText()}};
+    QMap<QString, QString> map = {{"username", ui->usernameLoginField->text()}, {"password", ui->passwordLoginField->text()}};
     socket->write(createPacket("login", map));
+}
+
+/*
+ * When the "register" button is clicked, send the given username:password to the server for verification.
+ * Page: 1
+ */
+void MainWindow::on_registerButton_clicked()
+{
+    QMap<QString, QString> map = {{"username", ui->usernameRegisterField->text()}, {"password", ui->passwordRegisterField->text()}};
+    socket->write(createPacket("register", map));
 }
 
 /*
@@ -72,11 +91,11 @@ void MainWindow::on_messageSend_clicked()
  */
 void MainWindow::on_logoutButton_clicked()
 {
-    ui->errorMessageInput->setPlainText("Logged out.");
+    this->socket->close();
     this->username = "";
     ui->userList->clear();
     ui->messageList->clear();
-    this->socket->close();
+    ui->errorMessageInput->setPlainText("Logged out.");
     ui->pagesWidget->setCurrentIndex(0);
 }
 
@@ -89,6 +108,9 @@ void MainWindow::serverDisconnected() {
     this->username = "";
     ui->userList->clear();
     ui->messageList->clear();
+    ui->loginError->clear();
+    ui->usernameRegisterField->clear();
+    ui->passwordRegisterField->clear();
 }
 
 /*
@@ -97,63 +119,71 @@ void MainWindow::serverDisconnected() {
 void MainWindow::readyRead()
 {
     QList<QByteArray> readData = socket->readAll().split('\n');
-    qDebug() << "Read: " << readData;
 
-    QList<QByteArray>::iterator i;
-    for (i = readData.begin(); i != readData.end(); ++i) {
-        if((*i).count() == 0) break;
+    QList<QByteArray>::iterator iterator;
+    for (iterator = readData.begin(); iterator != readData.end(); ++iterator) {
+        if((*iterator).count() == 0) break;
 
-        QXmlStreamReader xmlReader(*i);
-        xmlReader.readNextStartElement();
+        QMap<QString, QString> packetMap = readPacket(*iterator);
 
-        QString packetType = xmlReader.name().toString();
-        if(packetType == "login") {
-            xmlReader.readNextStartElement();
-            QString status = xmlReader.readElementText();
-            if(status == "success") {
-                xmlReader.readNextStartElement();
-                this->username = xmlReader.readElementText();
+        if(packetMap.value("header") == "login") {
+            if(packetMap.value("status") == "success") {
+                this->username = packetMap.value("username");
                 ui->pagesWidget->setCurrentIndex(2);
                 ui->userList->append(this->username);
-            } else ui->loginError->setPlainText("Unable to login, invalid credentials.");
-        } else if(packetType == "user") {
-            xmlReader.readNextStartElement();
-            QString type = xmlReader.readElementText();
-            xmlReader.readNextStartElement();
-            QString user = xmlReader.readElementText();
-            if(type == "joined") {
+            } else ui->loginError->setPlainText(packetMap.value("message"));
+        } else if(packetMap.value("header") == "register") {
+            if(packetMap.value("status") == "success") {
+                this->username = packetMap.value("username");
+                ui->pagesWidget->setCurrentIndex(2);
+                ui->userList->append(this->username);
+            } else ui->registerError->setPlainText(packetMap.value("message"));
+        } else if(packetMap.value("header") == "user") {
+            if(packetMap.value("type") == "joined") {
                 QStringList lines = ui->userList->toPlainText().split("\n");
                 bool userFound = false;
                 int i = 0;
                 while(i < lines.size()) {
                     QString line = lines.at(i);
-                    if(line == user) {
+                    if(line == packetMap.value("username")) {
                         userFound = true;
                         break;
                     } else i++;
                 }
-                if(!userFound) ui->userList->append(user);
-            } else if(type == "left") {
+                if(!userFound) ui->userList->append(packetMap.value("user"));
+            } else if(packetMap.value("type") == "left") {
                 QStringList lines = ui->userList->toPlainText().split("\n");
-                qDebug() << user << "has left!";
+                qDebug() << packetMap.value("username") << "has left!";
                 int i = 0;
                 while(i < lines.size()) {
                     QString line = lines.at(i);
-                    if(line == user) {
+                    if(line == packetMap.value("username")) {
                         lines.removeAt(i);
                         break;
                     } else i++;
                 }
                 ui->userList->setPlainText(lines.join("\n"));
             }
-        } else if(packetType == "message") {
-            xmlReader.readNextStartElement();
-            QString message = xmlReader.readElementText();
-            xmlReader.readNextStartElement();
-            QString user = xmlReader.readElementText();
-            addText(user + ": " + message);
+        } else if(packetMap.value("header") == "message") {
+            addText(packetMap.value("username") + ": " + packetMap.value("message"));
         }
     }
+}
+
+/*
+ * Read a xml packet and create a QMap of its contents
+ */
+QMap<QString, QString> MainWindow::readPacket(QByteArray packet) {
+    QMap<QString, QString> map;
+    QXmlStreamReader xmlReader(packet);
+
+    xmlReader.readNextStartElement();
+    map.insert("header", xmlReader.name().toString());
+
+    while(xmlReader.readNextStartElement()) {
+        map.insert(xmlReader.name().toString(), xmlReader.readElementText());
+    }
+    return map;
 }
 
 /*

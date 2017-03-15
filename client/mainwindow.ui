@@ -46,16 +46,6 @@
        <string>IP:</string>
       </property>
      </widget>
-     <widget class="QPlainTextEdit" name="ipInput">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>130</y>
-        <width>151</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QPlainTextEdit" name="portText">
       <property name="enabled">
        <bool>false</bool>
@@ -72,23 +62,13 @@
        <string>Port:</string>
       </property>
      </widget>
-     <widget class="QPlainTextEdit" name="portInput">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>130</y>
-        <width>131</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QPushButton" name="connectButton">
       <property name="geometry">
        <rect>
-        <x>290</x>
+        <x>250</x>
         <y>180</y>
-        <width>75</width>
-        <height>23</height>
+        <width>131</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="text">
@@ -111,28 +91,28 @@
        <bool>true</bool>
       </property>
      </widget>
-    </widget>
-    <widget class="QWidget" name="page_1">
-     <widget class="QPlainTextEdit" name="usernameLoginField">
+     <widget class="QLineEdit" name="ipInput">
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>90</y>
-        <width>141</width>
+        <y>130</y>
+        <width>131</width>
         <height>31</height>
        </rect>
       </property>
      </widget>
-     <widget class="QPlainTextEdit" name="passwordLoginField">
+     <widget class="QLineEdit" name="portInput">
       <property name="geometry">
        <rect>
         <x>410</x>
-        <y>90</y>
-        <width>161</width>
+        <y>130</y>
+        <width>131</width>
         <height>31</height>
        </rect>
       </property>
      </widget>
+    </widget>
+    <widget class="QWidget" name="page_1">
      <widget class="QPushButton" name="loginButton">
       <property name="geometry">
        <rect>
@@ -207,26 +187,6 @@
        <string>Username:</string>
       </property>
      </widget>
-     <widget class="QPlainTextEdit" name="passwordRegisterField">
-      <property name="geometry">
-       <rect>
-        <x>420</x>
-        <y>300</y>
-        <width>161</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPlainTextEdit" name="usernameRegisterField">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>300</y>
-        <width>141</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QPushButton" name="registerButton">
       <property name="geometry">
        <rect>
@@ -278,6 +238,46 @@
         <x>70</x>
         <y>240</y>
         <width>511</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="usernameLoginField">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>90</y>
+        <width>121</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="passwordLoginField">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>90</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="usernameRegisterField">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>300</y>
+        <width>131</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="passwordRegisterField">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>300</y>
+        <width>131</width>
         <height>31</height>
        </rect>
       </property>

@@ -20,11 +20,13 @@ public:
     Client *socket;
 
 private:
-    bool userExists(QString, QString);
+    QMap<QString, QString> userExists(QString, QString);
+    QMap<QString, QString> registerNewUser(QString, QString);
     void sendUserJoined(QTcpSocket*, QString);
     void sendUserLeft(QString);
+    QSqlDatabase db;
+    QMap<QString, QString> readPacket(QByteArray);
     QByteArray createPacket(QString, QMap<QString, QString>);
-signals:
 
 public slots:
     void onNewData();
@@ -32,7 +34,6 @@ public slots:
 
 protected:
     void incomingConnection(int socketDescriptor);
-
 };
 
 #endif // SERVER_HPP
