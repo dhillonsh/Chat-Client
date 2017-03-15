@@ -2,8 +2,12 @@
 #define SERVER_HPP
 
 #include <QObject>
-#include <QTcpSocket>
 #include <QtcpServer>
+#include <QtNetwork>
+#include <QtDebug>
+#include <QtSql>
+#include <QXmlStreamWriter>
+
 #include "client.hpp"
 
 class Server : public QTcpServer
@@ -12,8 +16,14 @@ class Server : public QTcpServer
 public:
     explicit Server(QObject *parent = 0);
     void startServer();
-    QList<Client *> clientConnections;
+    QList<Client*> clientConnections;
     Client *socket;
+
+private:
+    bool userExists(QString, QString);
+    void sendUserJoined(QTcpSocket*, QString);
+    void sendUserLeft(QString);
+    QByteArray createPacket(QString, QMap<QString, QString>);
 signals:
 
 public slots:

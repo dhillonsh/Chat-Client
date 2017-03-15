@@ -10,6 +10,13 @@ class Client : public QObject
 public:
     explicit Client(QObject *parent = 0, int socketDescriptor = -1);
     QTcpSocket *m_socket;
+    QString username;
+signals:
+    void sendSocketClose();
+    void sendReceivedData();
+private slots:
+    void socketClosed();
+    void receivedData();
 };
 
 #endif // CLIENT_HPP
