@@ -21,6 +21,8 @@ public:
     ~MainWindow();
 
 private:
+    void restoreDefaults();
+    QString parseMessage(QString);
     void addText(QString);
     QTcpSocket *socket;
     Ui::MainWindow *ui;
@@ -29,6 +31,7 @@ private:
     QByteArray createPacket(QString, QMap<QString, QString>);
 
 private slots:
+    void moveChatBoxScroll(int, int);
     void on_messageSend_clicked();
     void on_connectButton_clicked();
     void serverDisconnected();

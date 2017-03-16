@@ -9,7 +9,6 @@ Server::Server(QObject *parent) :
     {
     }
 
-
 /*
  * Start the server, and get prompted to input a port to listen on.
  * Check if the database exists and if not, create it along with the table `users`.

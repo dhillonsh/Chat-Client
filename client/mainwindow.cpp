@@ -1,5 +1,10 @@
 #include "mainwindow.hpp"
 
+#include <QLabel>
+#include <QScrollBar>
+#include <QFile>
+#include <QDirIterator>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
         ui->setupUi(this);
@@ -12,6 +17,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
         ui->usernameRegisterField->setValidator(new QRegExpValidator( QRegExp("[A-Za-z0-9_]*"), this ));
         ui->passwordRegisterField->setValidator(new QRegExpValidator( QRegExp("[A-Za-z0-9]*"), this ));
+
+        ui->chatBox->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        connect(ui->scrollArea->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(moveChatBoxScroll(int, int)));
+
+        /* Get list of emojis */
+        QDirIterator it(":/images/", QDirIterator::Subdirectories);
+        QList<QString> emojiList;
+        QString emoji;
+        while (it.hasNext()) {
+            it.next();
+            emoji = it.fileName().split(".")[0];
+            emojiList.append("(" + emoji + ")");
+        }
+        ui->emojiBox->setText("Emojis: " + (emojiList.count() == 0 ? "None" : emojiList.join(" ")));
+
+        /* If pressing the "enter" key on the chat box, send the message */
+        connect(ui->messageInput, SIGNAL(returnPressed()),ui->messageSend,SIGNAL(clicked()));
 }
 
 MainWindow::~MainWindow()
@@ -19,8 +41,52 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+/*
+ * When receiving a new message, parse it for potential emojis and replace the emojis with their respective images
+ * Page: 2
+ */
+QString MainWindow::parseMessage(QString str) {
+    QString emoji;
+    QList<QString> emojisChecked;
+    QRegExp regx("\\((.*)\\)");
+    regx.setMinimal(true);
+
+    int pos = 0;
+    while ((pos = regx.indexIn(str, pos)) != -1)
+    {
+        pos += regx.matchedLength();
+        emoji = regx.cap(1).toLower();
+        if(emojisChecked.indexOf(emoji) != -1) continue;
+        emojisChecked.append(emoji);
+        QFile checkIfExists(":/images/" + emoji + ".png");
+        if(checkIfExists.exists()) str.replace("(" + regx.cap(1) + ")", "<img src=\":/images/" + emoji + ".png\" height=\"25\" width=\"25\" vertical-align=\"middle\">");
+    }
+    return str;
+}
+
+/*
+ * Add messages to the chat box window
+ * Page: 2
+ */
 void MainWindow::addText(QString str) {
-    ui->messageList->append(str);
+    QLabel *label = new QLabel(this);
+    label->setTextFormat(Qt::RichText);
+    label->setText(parseMessage(str));
+
+    label->setContentsMargins(2,0,0,0);
+
+    ui->chatBox->addWidget(label, 0, Qt::AlignTop);
+    ui->chatBox->addSpacing(2);
+}
+
+/*
+ * When a new message is added to the chat box, automatically scroll the chat box down to the bottom
+ * Page: 2
+ */
+void MainWindow::moveChatBoxScroll(int min, int max)
+{
+    Q_UNUSED(min);
+    ui->scrollArea->verticalScrollBar()->setValue(max);
 }
 
 /*
@@ -71,7 +137,7 @@ void MainWindow::on_registerButton_clicked()
  */
 void MainWindow::on_messageSend_clicked()
 {
-    QString data = ui->messageInput->toPlainText();
+    QString data = ui->messageInput->text();
 
     QTextDocument filter;
     filter.setHtml(data);
@@ -86,31 +152,45 @@ void MainWindow::on_messageSend_clicked()
 }
 
 /*
+ * Restore original window and empty populated fields
+ */
+void MainWindow::restoreDefaults() {
+    this->socket->close();
+
+    this->username = "";
+    ui->userList->clear();
+    ui->loginError->clear();
+    ui->usernameRegisterField->clear();
+    ui->passwordRegisterField->clear();
+
+    /* Clear chat box widgets */
+    QLayoutItem* item;
+    while ( ( item = ui->chatBox->layout()->takeAt( 0 ) ) != NULL )
+    {
+        delete item->widget();
+        delete item;
+    }
+
+    ui->pagesWidget->setCurrentIndex(0);
+}
+
+/*
  * When the "logout" button is clicked, return to Page 0.
  * Page: 2
  */
 void MainWindow::on_logoutButton_clicked()
 {
-    this->socket->close();
-    this->username = "";
-    ui->userList->clear();
-    ui->messageList->clear();
     ui->errorMessageInput->setPlainText("Logged out.");
-    ui->pagesWidget->setCurrentIndex(0);
+    restoreDefaults();
 }
+
 
 /*
  * If the client disconnects from the server (e.x. server is stopped), return to Page 0.
  */
 void MainWindow::serverDisconnected() {
-    ui->pagesWidget->setCurrentIndex(0);
     ui->errorMessageInput->setPlainText("Server disconnected.");
-    this->username = "";
-    ui->userList->clear();
-    ui->messageList->clear();
-    ui->loginError->clear();
-    ui->usernameRegisterField->clear();
-    ui->passwordRegisterField->clear();
+    restoreDefaults();
 }
 
 /*
