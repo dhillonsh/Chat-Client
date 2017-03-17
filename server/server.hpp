@@ -7,7 +7,7 @@
 #include <QtDebug>
 #include <QtSql>
 #include <QXmlStreamWriter>
-
+#include <iostream>
 #include "client.hpp"
 
 class Server : public QTcpServer
@@ -17,12 +17,14 @@ public:
     explicit Server(QObject *parent = 0);
     void startServer();
     QList<Client*> clientConnections;
+    QString room;
     Client *socket;
 
 private:
+    QMap<QString, QList<Client*>> roomList;
     QMap<QString, QString> userExists(QString, QString);
     QMap<QString, QString> registerNewUser(QString, QString);
-    void sendUserJoined(QTcpSocket*, QString);
+    void sendUserJoined(Client*);
     void sendUserLeft(QString);
     QSqlDatabase db;
     QMap<QString, QString> readPacket(QByteArray);

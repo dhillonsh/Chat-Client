@@ -7,6 +7,10 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QDebug>
+#include <QLabel>
+#include <QScrollBar>
+#include <QFile>
+#include <QDirIterator>
 
 namespace Ui {
 class MainWindow;
@@ -21,12 +25,14 @@ public:
     ~MainWindow();
 
 private:
-    void restoreDefaults();
-    QString parseMessage(QString);
-    void addText(QString);
-    QTcpSocket *socket;
-    Ui::MainWindow *ui;
+    QString room;
     QString username;
+    QTcpSocket *socket;
+    void clearChatBox();
+    void restoreDefaults();
+    void addText(QString);
+    QString parseMessage(QString);
+    Ui::MainWindow *ui;
     QMap<QString, QString> readPacket(QByteArray);
     QByteArray createPacket(QString, QMap<QString, QString>);
 
@@ -39,6 +45,8 @@ private slots:
     void on_logoutButton_clicked();
     void readyRead();
     void on_registerButton_clicked();
+    void on_openNewRoomButton_clicked();
+    void on_joinRoomButton_clicked();
 };
 
 #endif // MAINWINDOW_HPP

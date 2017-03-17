@@ -9,6 +9,7 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(QObject *parent = 0, int socketDescriptor = -1);
+    QString room;
     QTcpSocket *m_socket;
     QString username;
 signals:

@@ -2,5 +2,12 @@
     <qresource prefix="/">
         <file>images/sad.png</file>
         <file>images/smile.png</file>
+        <file>images/cool.png</file>
+        <file>images/cry.png</file>
+        <file>images/disappointed.png</file>
+        <file>images/heart.png</file>
+        <file>images/mad.png</file>
+        <file>images/sick.png</file>
+        <file>images/zip.png</file>
     </qresource>
 </RCC>

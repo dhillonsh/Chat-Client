@@ -1,10 +1,5 @@
 #include "mainwindow.hpp"
 
-#include <QLabel>
-#include <QScrollBar>
-#include <QFile>
-#include <QDirIterator>
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
         ui->setupUi(this);
@@ -59,7 +54,11 @@ QString MainWindow::parseMessage(QString str) {
         if(emojisChecked.indexOf(emoji) != -1) continue;
         emojisChecked.append(emoji);
         QFile checkIfExists(":/images/" + emoji + ".png");
-        if(checkIfExists.exists()) str.replace("(" + regx.cap(1) + ")", "<img src=\":/images/" + emoji + ".png\" height=\"25\" width=\"25\" vertical-align=\"middle\">");
+        if(checkIfExists.exists()) {
+            QRegExp replaceReg("\\((" + regx.cap(1) + ")\\)");
+            replaceReg.setCaseSensitivity(Qt::CaseInsensitive);
+            str.replace(replaceReg, "<img src=\":/images/" + emoji + ".png\" height=\"25\" width=\"25\" vertical-align=\"middle\">");
+        }
     }
     return str;
 }
@@ -117,7 +116,9 @@ void MainWindow::on_connectButton_clicked()
  */
 void MainWindow::on_loginButton_clicked()
 {
-    QMap<QString, QString> map = {{"username", ui->usernameLoginField->text()}, {"password", ui->passwordLoginField->text()}};
+    QMap<QString, QString> map;
+    map.insert("username", ui->usernameLoginField->text());
+    map.insert("password", ui->passwordLoginField->text());
     socket->write(createPacket("login", map));
 }
 
@@ -127,7 +128,9 @@ void MainWindow::on_loginButton_clicked()
  */
 void MainWindow::on_registerButton_clicked()
 {
-    QMap<QString, QString> map = {{"username", ui->usernameRegisterField->text()}, {"password", ui->passwordRegisterField->text()}};
+    QMap<QString, QString> map;
+    map.insert("username", ui->usernameRegisterField->text());
+    map.insert("password", ui->passwordRegisterField->text());
     socket->write(createPacket("register", map));
 }
 
@@ -146,9 +149,23 @@ void MainWindow::on_messageSend_clicked()
     addText(username + ": " + data);
     ui->messageInput->clear();
 
-    QMap<QString, QString> map = {{"message", data}, {"username", this->username}};
-    qDebug() << "Sending message packet: " << createPacket("message", map);
+    QMap<QString, QString> map;
+    map.insert("message", data);
+    map.insert("username", this->username);
+    map.insert("room", this->room);
     socket->write(createPacket("message", map));
+}
+
+/*
+ * Clear the main chat box window
+ */
+void MainWindow::clearChatBox() {
+    QLayoutItem* item;
+    while ( ( item = ui->chatBox->layout()->takeAt( 0 ) ) != NULL )
+    {
+        delete item->widget();
+        delete item;
+    }
 }
 
 /*
@@ -164,12 +181,7 @@ void MainWindow::restoreDefaults() {
     ui->passwordRegisterField->clear();
 
     /* Clear chat box widgets */
-    QLayoutItem* item;
-    while ( ( item = ui->chatBox->layout()->takeAt( 0 ) ) != NULL )
-    {
-        delete item->widget();
-        delete item;
-    }
+    clearChatBox();
 
     ui->pagesWidget->setCurrentIndex(0);
 }
@@ -199,7 +211,6 @@ void MainWindow::serverDisconnected() {
 void MainWindow::readyRead()
 {
     QList<QByteArray> readData = socket->readAll().split('\n');
-    qDebug() << "Read: " << readData;
 
     QList<QByteArray>::iterator iterator;
     for (iterator = readData.begin(); iterator != readData.end(); ++iterator) {
@@ -209,6 +220,7 @@ void MainWindow::readyRead()
 
         if(packetMap.value("header") == "login") {
             if(packetMap.value("status") == "success") {
+                this->room = "lobby";
                 this->username = packetMap.value("username");
                 ui->pagesWidget->setCurrentIndex(2);
                 ui->userList->append(this->username);
@@ -246,6 +258,14 @@ void MainWindow::readyRead()
             }
         } else if(packetMap.value("header") == "message") {
             addText(packetMap.value("username") + ": " + packetMap.value("message"));
+        } else if(packetMap.value("header") == "room") {
+            this->room = packetMap.value("name");
+            ui->userList->setPlainText(this->username);
+            ui->userList->append(this->username);
+            ui->currentRoomText->setPlainText(this->room);
+            ui->newRoomField->clear();
+            clearChatBox();
+            ui->pagesWidget->setCurrentIndex(2);
         }
     }
 }
@@ -286,4 +306,16 @@ QByteArray MainWindow::createPacket(QString header, QMap<QString, QString> map) 
     xmlWriter.writeEndDocument();
 
     return packet.toUtf8();
+}
+
+void MainWindow::on_openNewRoomButton_clicked()
+{
+    ui->pagesWidget->setCurrentIndex(3);
+}
+
+void MainWindow::on_joinRoomButton_clicked()
+{
+    QMap<QString, QString> map;
+    map.insert("name", ui->newRoomField->text());
+    socket->write(createPacket("room", map));
 }

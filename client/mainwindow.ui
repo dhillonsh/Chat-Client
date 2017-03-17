@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Chat Client</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QStackedWidget" name="pagesWidget">
@@ -307,7 +307,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPlainTextEdit" name="plainTextEdit">
+     <widget class="QPlainTextEdit" name="currentRoomText">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -329,7 +329,7 @@
        <bool>true</bool>
       </property>
       <property name="plainText">
-       <string>Users</string>
+       <string>Lobby</string>
       </property>
       <property name="backgroundVisible">
        <bool>false</bool>
@@ -339,7 +339,7 @@
       <property name="geometry">
        <rect>
         <x>560</x>
-        <y>320</y>
+        <y>370</y>
         <width>71</width>
         <height>31</height>
        </rect>
@@ -425,6 +425,62 @@
         <height>51</height>
        </rect>
       </property>
+     </widget>
+     <widget class="QPushButton" name="openNewRoomButton">
+      <property name="geometry">
+       <rect>
+        <x>500</x>
+        <y>260</y>
+        <width>131</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Join Room</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>60</y>
+        <width>491</width>
+        <height>261</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <kerning>true</kerning>
+       </font>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QPushButton" name="joinRoomButton">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>150</y>
+         <width>151</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Join Room</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="newRoomField">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>110</y>
+         <width>221</width>
+         <height>21</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
     </widget>
    </widget>
