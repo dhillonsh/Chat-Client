@@ -2,7 +2,7 @@
 #define SERVER_HPP
 
 #include <QObject>
-#include <QtcpServer>
+#include <QTcpServer>
 #include <QtNetwork>
 #include <QtDebug>
 #include <QtSql>
