@@ -5,7 +5,7 @@
     -  Join any server running on any IP/Port
     -  Login/Register accounts
     -  Supports multiple clients
-    -  Send smileys (Smileys are added manually in the client projects
+    -  Send smileys (Smileys are added manually in the client project)
 
 # Instructions
   - Clone the repository:
@@ -14,9 +14,11 @@
   - `cd` into the `server` directory and execute:
     - `qmake server.pro`
     - `make`
+	- This must be running in order for clients to be able to connect
   - `cd` into the  `client` directory and execute:
     - `qmake client.pro`
     - `make`
+	- This is what the client uses to connect to the server (the GUI)
 
 # Project Updates:
   - 2/20/17 Harpreet - Working on the server portion of the chat application 
