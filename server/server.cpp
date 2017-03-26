@@ -43,7 +43,7 @@ void Server::startServer()
 /*
  * When a new client connects, accept and append to clientConnections list
  */
-void Server::incomingConnection(int socketDescriptor)
+void Server::incomingConnection(qintptr socketDescriptor)
 {
     qDebug() << socketDescriptor << " Connecting...";
 
