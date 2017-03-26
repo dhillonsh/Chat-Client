@@ -37,7 +37,19 @@
     - Press `connect` and you should then see the Login/Register page
       - If you do not have an account already, then use the bottom section to register a new account and press `register`
       - Else, login using valid credentials
-
+    - You will then see the chatbox main page
+      - On the middle of the page will be the messages that have been sent/received
+      - On the right side is the userlist which will display all the users currently in the group and any new users that join
+        - The group name is on top of the user list on the right side
+        - Under the user list is a buttom called `Join Room`
+          - When clicking this, you will navigate to a page that will display a text box. Enter in the group name you wish to join and press `Join Room`
+          - Note: You will only see users and messages from within the same group
+       - Underneath the chatbox is the input field where you can type a message to be sent, and press `Send`
+       - Underneath the input field is a small text box that lists all of the possible emojis
+         - To send an emoji in the chat, type in one of the emojis (for example: (smile)) and press `Send`, an example message would be:
+           - I feel very happy (happy).
+         - Note: you must include the paranthesis when sending emojis
+       - On the bottom right is a `Logout` button which will send you back to the server select page and log you out of the chat
   
 
 # Project Updates:
