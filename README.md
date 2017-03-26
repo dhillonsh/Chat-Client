@@ -32,11 +32,11 @@
   - Now run the actual chat client GUI
     - You will need to navigate into the client directory and run the `client` application
     - After the GUI opens, you will see a field to enter in the IP and PORT of wherever the server is located
-      - If you are running the server and client on the same machine, then the IP would be the localhost IP: 127.0.0.1
-      - The port is the port you entered when you ran the `./server` file (11000 in our example)
+        - If you are running the server and client on the same machine, then the IP would be the localhost IP: 127.0.0.1
+        - The port is the port you entered when you ran the `./server` file (11000 in our example)
     - Press `connect` and you should then see the Login/Register page
-      - If you do not have an account already, then use the bottom section to register a new account and press `register`
-      - Else, login using valid credentials
+        - If you do not have an account already, then use the bottom section to register a new account and press `register`
+        - Else, login using valid credentials
     - You will then see the chatbox main page
         - On the middle of the page will be the messages that have been sent/received
         - On the right side is the userlist which will display all the users currently in the group and any new users that join
