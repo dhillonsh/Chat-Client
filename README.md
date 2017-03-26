@@ -8,6 +8,7 @@
     -  Send smileys (Smileys are added manually in the client project)
 
 # Instructions
+##Setup
   - Clone the repository:
     - `git clone https://bitbucket.org/dhillonsh/chat-client <targetDirectory>`
     - `cd <targetDirectory>`
@@ -19,6 +20,7 @@
     - `qmake client.pro`
     - `make`
 	- This is what the client uses to connect to the server (the GUI)
+
 
 # Project Updates:
   - 2/20/17 Harpreet - Working on the server portion of the chat application 
