@@ -41,7 +41,7 @@
         - On the middle of the page will be the messages that have been sent/received
         - On the right side is the userlist which will display all the users currently in the group and any new users that join
             - The group name is on top of the user list on the right side
-            - Under the user list is a buttom called `Join Room`
+            - Under the user list is a button called `Join Room`
                 - When clicking this, you will navigate to a page that will display a text box. Enter in the group name you wish to join and press `Join Room`
                 - Note: You will only see users and messages from within the same group
          - Underneath the chatbox is the input field where you can type a message to be sent, and press `Send`
