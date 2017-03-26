@@ -27,8 +27,8 @@
     - Run the server: `./server`
     - You will then be prompted to enter a port, this is the port the clients will use when attempting to connect (enter any available port) (example: 11000)
     - You should then see the following prompts which will indicate that the server is running properly:
-      - `Listening on port 11000`
-      - `Successfully connected to database`
+        - `Listening on port 11000`
+        - `Successfully connected to database`
   - Now run the actual chat client GUI
     - You will need to navigate into the client directory and run the `client` application
     - After the GUI opens, you will see a field to enter in the IP and PORT of wherever the server is located
