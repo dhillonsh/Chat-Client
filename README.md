@@ -22,7 +22,7 @@
       - This is what the client uses to connect to the server (the GUI)
 
 ##Running
-  - Being by running the server
+  - Begin by running the server
     - Navigate into the server directory via: `cd server`
     - Run the server: `./server`
     - You will then be prompted to enter a port, this is the port the clients will use when attempting to connect (enter any available port) (example: 11000)
