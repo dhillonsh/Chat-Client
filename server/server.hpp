@@ -35,7 +35,7 @@ public slots:
     void clientDisconnected();
 
 protected:
-    void incomingConnection(int socketDescriptor);
+    void incomingConnection(qintptr socketDescriptor);
 };
 
 #endif // SERVER_HPP
